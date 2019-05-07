@@ -47,4 +47,71 @@ class EmployeeListVC: UITableViewController {
         
         return cell!
     }
+    
+    @IBAction func add(_ sender: Any) {
+        let alert = UIAlertController(title: "사원 등록", message: "등록할 사원 정보를 입력해 주세요", preferredStyle: .alert)
+        alert.addTextField() { (tf) in tf.placeholder = "사원명" }
+        
+        // contentViewController 영역에 부서 선택 피커 뷰 삽입
+        let pickervc = DepartPickerVC()
+        alert.setValue(pickervc, forKey: "contentViewController")
+        
+        // 등록창 버튼 처리
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "확인", style: .default) { (_) in
+            
+            // 1. 알림창의 일벽 필드에서 값을 읽어옴
+            var param = EmployeeVO()
+            param.departCd = pickervc.selectedDepartCd
+            param.empName = (alert.textFields?[0].text)!
+            
+            // 2. 가입일은 오늘로 한다.
+            let df = DateFormatter()
+            df.dateFormat = "yyyy-MM-dd"
+            param.joinDate = df.string(from: Date())
+            
+            // 3. 재직 상태는 '재직중'으로 한다
+            param.stateCd = EmpStateType.ING
+            
+            // 4.DB 처리
+            if self.empDAO.create(param: param) {
+                // 4-1 결과가 성공이면 데이터를 다시 읽어들여 테이블 뷰를 갱신
+                self.empList = self.empDAO.find()
+                self.tableView.reloadData()
+                
+                // 4-2 내비게이션 타이틀을 갱신
+                if let navTitle = self.navigationItem.titleView as? UILabel {
+                    navTitle.text = "사원 목록 \n" + "총 \(self.empList.count)명"
+                }
+            }
+        })
+        
+        self.present(alert, animated: false)
+    }
+    
+    @IBAction func editing(_ sender: Any) {
+        if self.isEditing == false { // 현재 편집 모드가 아닐 때
+            self.setEditing(true, animated: true)
+            (sender as? UIBarButtonItem)?.title = "Done"
+        } else { // 현재 편집 모드일 때
+            self.setEditing(false, animated: false)
+            (sender as? UIBarButtonItem)?.title = "Edit"
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return UITableViewCell.EditingStyle.delete
+    }
+    
+    // 목록 편집 버튼을 클릭했을 때 호출되는 메소드
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        // 1. 삭제할 행의 empCd를 구한다
+        let empCd = self.empList[indexPath.row].empCd
+        
+        // 2. DB에서, 데이터 소스 에서, 그리고 테이블 뷰에서 차례대로 삭제
+        if empDAO.delete(empCd: empCd) {
+            self.empList.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
 }

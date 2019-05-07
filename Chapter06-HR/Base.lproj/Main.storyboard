@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="sU3-YA-vEt">
     <device id="retina6_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -127,7 +127,18 @@
                             <outlet property="delegate" destination="D2o-Ob-txS" id="Xfk-Ls-WNh"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="사원목록" id="F5t-s9-uko"/>
+                    <navigationItem key="navigationItem" title="사원목록" id="F5t-s9-uko">
+                        <barButtonItem key="leftBarButtonItem" title="Edit" id="rXs-1w-HYM">
+                            <connections>
+                                <action selector="editing:" destination="D2o-Ob-txS" id="kJo-w5-hQi"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="fGz-mO-kq0">
+                            <connections>
+                                <action selector="add:" destination="D2o-Ob-txS" id="8xD-xq-3bf"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qyi-Fn-WEQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
